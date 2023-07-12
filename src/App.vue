@@ -1,35 +1,42 @@
 <template>
     <div class="side">
-        <div v-for="(item, index) in side_items" :key="index" :style="{ color: item.color }">
+        <div v-for="(item, index) in side_items" :key="index"
+            :style="{ color: item.color, backgroundColor: index == selectSubject ? 'rgba(0, 255, 10, 1)' : 'rgba(0, 0, 0, 0)' }"
+            @click="sideClickEvent(index)">
             {{ item.text }}
+        </div>
+    </div>
+    <div class="dialog" v-show="selectSubject != -1">
+        <div v-for="v, k, i in subject_name" :key="k" @click="dialogClickEvent(i, k)">
+            {{ k }}
         </div>
     </div>
     <div class="main" ref="main">
         <div class="child" v-for="(item, index) in main_items" :key="index"
-            :style="{ fontSize: item.fontsize + 'px', transition: MAIN_FONTSIZE_TRANSITION, color: item.color }">
-            {{ item.text }}{{ item.after }}
+            :style="{ transition: MAIN_FONTSIZE_TRANSITION, color: item.color }" :id="item.id" :content="item.after">
+            {{ item.text }}
         </div>
     </div>
     <div class="counter">
-        <div class="text"> 距高考还剩<div> {{ dayCountdown }} </div>天 </div>
+        <div class="text">
+            <div> {{ dayCountdown }} </div>天
+        </div>
     </div>
 </template>
 <script setup>
 import { reactive, ref } from 'vue'
 
-const MAIN_FONT_SIZE = 60
-const MAIN_SELECT_FONT_SIZE = 80
 const MAIN_FONTSIZE_TRANSITION = 'font-size 0.5s ease-in-out, color 0.5s ease-in-out, width 0.5s ease-in-out'
-const MAIN_SELECT_COLOR = 'rgba(0,255,66,1)'
-const MAIN_BEFORE_COLOR = 'rgba(100,100,100,0.7)'
+const MAIN_SELECT_COLOR = 'rgba(255,255,0,1)'
+const MAIN_BEFORE_COLOR = 'rgba(160,160,160,0.7)'
 const MAIN_AFTER_COLOR = 'rgba(255,255,255,1)'
-const SIDE_SELECT_COLOR = 'rgba(255,255,0,1)'
-const SIDE_BEFORE_COLOR = 'rgba(150,150,0,1)'
-const SIDE_AFTER_COLOR = 'rgba(255,255,0,1)'
+const SIDE_SELECT_COLOR = 'rgba(255,255,255,1)'
+const SIDE_BEFORE_COLOR = 'rgba(190,190,190,1)'
+const SIDE_AFTER_COLOR = 'rgba(255,255,255,1)'
 const EXAM_DATE = '2024-6-7'
 
 
-const daily_classes = [
+let daily_classes = [
     ['英', '数', '语', '走', '自', '化', '物', '自', '班'], //周日
     ['物', '英', '化', '语', '走', '体', '自', '数', '数'], //周一
     ['英', '数', '物', '语', '自', '化', '自', '语', '走'], //周二 
@@ -88,19 +95,23 @@ let main_items = []
 
 let side_items = []
 
+let dialogDisplay = ref(false)
+
+let selectSubject = ref(-1)
+
 const main = ref(null)
 
 function changeMain(index) {
     const element = main.value.children[index]
     for (let i = 0; i < main_items.length; i++) {
         if (i === index) {
-            main_items[i].fontsize = MAIN_SELECT_FONT_SIZE
             main_items[i].color = MAIN_SELECT_COLOR
+            main_items[i].id = 'highlight'
             setTimeout(() => {
                 element.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" })
             }, 500);
         } else {
-            main_items[i].fontsize = MAIN_FONT_SIZE
+            main_items[i].id = ''
             if (i < index) {
                 main_items[i].color = MAIN_BEFORE_COLOR
             } else {
@@ -138,7 +149,7 @@ function updateMainOriginText() {
         if (typeof (text) == 'number') {
             text = subject_name[daily_classes[week][subject]] + '课'
         }
-        _main_items[i] = { text: text, fontsize: MAIN_FONT_SIZE, color: MAIN_AFTER_COLOR }
+        _main_items[i] = { text: text, color: MAIN_AFTER_COLOR, id: '' }
     });
     main_items = reactive(_main_items)
 }
@@ -165,7 +176,6 @@ function getNowTimeStr() {
             return interval;
         }
     }
-
     return null;
 }
 
@@ -190,7 +200,31 @@ function tick() {
     for (let i = 0; i < main_items.length; i++) {
         main_items[i].after = ''
     }
-    main_items[index].after = ' | ' + remainingTime
+    main_items[index].after = remainingTime
+}
+
+function sideClickEvent(index) {
+    console.log(index);
+    console.log(dialogDisplay);
+    
+    if (selectSubject == index){
+        selectSubject = -1
+    }else{
+        selectSubject = index
+    }
+}
+
+function dialogClickEvent(index, subject){
+    let date = new Date()
+    let week = date.getDay()
+    daily_classes[week][index] = subject
+    side_items[selectSubject].text = subject
+    Object.entries(common_schedule).sort((a, b) => a[0] - b[0]).forEach(function ([time, _subject], i) {
+        if (_subject === selectSubject) {
+            main_items[i].text = subject_name[subject] + '课' 
+        }
+    })
+    selectSubject = -1
 }
 
 updateDayCountdown()

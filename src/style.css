@@ -16,11 +16,13 @@ html {
 
 body {
   background: url("./assets/wallpaper.jpg") center center no-repeat;
+  background-position: 100% 50%;
+  background-size: cover;
 }
 
 .side {
   /* background-color: #fff; */
-  height: 100vh;
+  height: calc(100vh - 30px);
   width: fit-content;
   display: flex;
   flex-direction: column;
@@ -28,14 +30,16 @@ body {
   align-items: end;
   justify-content: space-evenly;
   font-size: 40px;
-  right: 0;
+  right: 3px;
   position: absolute;
+  z-index: 100;
 }
 
 .side * {
   display: inline-flex;
   color: yellow;
   text-shadow: 2px 2px 4px black;
+  z-index: 200;
 }
 
 .main {
@@ -48,6 +52,7 @@ body {
   padding-top: 60vh;
   padding-bottom: 60vh;
   white-space: nowrap;
+  font-size: 50px;
 }
 
 ::-webkit-scrollbar {
@@ -56,12 +61,11 @@ body {
 
 .counter {
   position: fixed;
-  top: 15%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.5);
+  top: 20px;
+  left: 120px;
+  background-color: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(6px);
-  height: 100px;
+  height: auto;
   width: auto;
   z-index: 10;
   display: flex;
@@ -69,19 +73,86 @@ body {
   align-items: center;
   border-radius: 10px;
   overflow: hidden;
+  box-shadow: 1px 1px 12px;
 }
 
 .counter .text {
-  color: rgba(255, 255, 255, 1);
-  font-size: 60px;
-  margin: 20px;
-  text-shadow: 2px 2px 4px black;
+  color: rgb(255, 0, 0);
+  margin: 10px 18px;
+  text-shadow: 1px 1px 6px black;
+  font-size: 16px;
   white-space: nowrap;
 }
 
 .counter .text * {
-  color: rgb(255, 20, 20);
+  color: rgb(255, 0, 0);
   display: inline;
   margin-left: 12px;
-  margin-right: 12px;
+  margin-right: 5px;
+  font-size: 66px;
+}
+
+
+
+@keyframes anim {
+  0% {
+    color: rgb(0, 255, 0);
+  }
+
+  50% {
+    color: rgb(90, 255, 90);
+  }
+
+
+  100% {
+    color: rgb(0, 255, 0);
+  }
+}
+
+.main #highlight {
+  font-size: 70px;
+  position: relative;
+  color: rgb(0, 255, 0);
+  /* animation: anim 5s linear infinite; */
+  text-shadow: rgba(0, 0, 0, 1) 4px 4px 8px;
+}
+
+.main #highlight::after {
+  content: attr(content);
+  font-size: 40px;
+  position: absolute;
+  top: 50%;
+  transform: translate(20px, -50%);
+  white-space: nowrap;
+  color: rgb(255, 255, 255);
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(6px);
+  padding: 4px 10px;
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.dialog {
+  margin: 20px;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 3px;
+  border-radius: 10px;
+  height: calc(100vh - 60px);
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: end;
+  justify-content: space-evenly;
+  font-size: 36px;
+  right: 48px;
+  position: absolute;
+  z-index: 300;
+}
+
+.dialog * {
+  display: inline-flex;
+  color: rgb(9, 255, 0);
+  text-shadow: 2px 2px 4px black;
+  z-index: 400;
 }
